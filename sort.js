@@ -64,8 +64,8 @@ function combSort(a) {
 
     for (var i = 0; gap + i < a.length; ++i) {
       if (test(a, i, i + gap) > 0) {
-	swap(a, i, i + gap);
-	swapped = true;
+        swap(a, i, i + gap);
+        swapped = true;
       }
     }
   }
@@ -79,7 +79,7 @@ function gnomeSort(a) {
     } else {
       swap(a, i, i - 1);
       if (i > 1) {
-	--i;
+        --i;
       }
     }
   }
@@ -103,16 +103,16 @@ function heapSort(a) {
 
     while (child < n) {
       if (child + 1 < n && test(a, child + 1, child) > 0) {
-	child++;
+        child++;
       }
 
       if (test(a, child, parent) > 0) {
-	swap(a, parent, child);
-	parent = child;
-	child = parent*2+1;
+        swap(a, parent, child);
+        parent = child;
+        child = parent*2+1;
       }
       else {
-	break;
+        break;
       }
     }
   }
