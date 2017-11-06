@@ -157,6 +157,43 @@ function selectionSort(a) {
   }
 }
 
+function radixLsdSort(a) {
+  var n = a.length;
+  var bits = Math.ceil(Math.log(n) / Math.log(2));
+  var pivot = Math.pow(2, bits) / 2;
+
+  for (var bit = 0; bit < bits; bit++) {
+
+    // Put each item into the respective bucket
+    var buckets = [[], []];
+    for (var i = 0; i < n; i++) {
+      test(a, i, i); // Treat hash as test to be fair for speed comparison
+      var value = a[i] - 1;
+      var hash = Math.floor(value / Math.pow(2, bit)) % 2;
+
+      buckets[hash].push(a[i]);
+    }
+
+    // Assemble the full listing
+    var tempList = [];
+    for (var i = 0; i < buckets[0].length; i++) {
+      tempList.push(buckets[0][i]);
+    }
+    for (var i = 0; i < buckets[1].length; i++) {
+      tempList.push(buckets[1][i]);
+    }
+
+    // Swap around the main list to put it in order
+    for (var i = 0; i < n; i++) {
+      for (var j = i; j < n; j++) {
+        if (tempList[i] == a[j] && i != j) {
+          swap(a, i, j);
+        }
+      }
+    }
+  }
+}
+
 function pivot(aa, type, left, right) {
   if (typeof(left) === 'undefined') left = 0;
   if (typeof(right) === 'undefined') right = aa.length() - 1;
