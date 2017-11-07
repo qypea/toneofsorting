@@ -162,16 +162,23 @@ function radixLsdSort(a) {
   var bits = Math.ceil(Math.log(n) / Math.log(2));
   var pivot = Math.pow(2, bits) / 2;
 
+  var midpoint = 0; // Midpoint is at start initially(one bucket coming in)
+
   for (var bit = 0; bit < bits; bit++) {
 
     // Keep a todo list so we don't get out of order by swapping
     var todo = [];
-    for (var i = 0; i < n; i++) {
+    for (var i = 0; i < midpoint; i++) {
       todo.push(i);
     }
+    for (var i = n-1; i >= midpoint; i--) {
+      todo.push(i);
+    }
+    console.log(midpoint);
+    console.log(todo);
 
     // Put each item into the respective bucket
-    var bucketPtrs = [0, pivot];
+    var bucketPtrs = [0, n-1];
     for (var t = 0; t < todo.length; t++) {
       var i = todo[t];
       test(a, i, i); // Treat hash as test to be fair for speed comparison
@@ -196,8 +203,22 @@ function radixLsdSort(a) {
         }
       }
 
-      bucketPtrs[hash]++;
+      if (hash == 0) {
+        bucketPtrs[hash]++;
+      } else {
+        bucketPtrs[hash]--;
+      }
     }
+    midpoint = bucketPtrs[0];
+  }
+
+  // Swap the second half to get it in the right order
+  var i = midpoint;
+  var j = n-1;
+  while (i < j) {
+    swap(a, i, j);
+    i++;
+    j--;
   }
 }
 
