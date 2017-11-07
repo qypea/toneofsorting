@@ -164,32 +164,39 @@ function radixLsdSort(a) {
 
   for (var bit = 0; bit < bits; bit++) {
 
-    // Put each item into the respective bucket
-    var buckets = [[], []];
+    // Keep a todo list so we don't get out of order by swapping
+    var todo = [];
     for (var i = 0; i < n; i++) {
+      todo.push(i);
+    }
+
+    // Put each item into the respective bucket
+    var bucketPtrs = [0, pivot];
+    for (var t = 0; t < todo.length; t++) {
+      var i = todo[t];
       test(a, i, i); // Treat hash as test to be fair for speed comparison
       var value = a[i] - 1;
       var hash = Math.floor(value / Math.pow(2, bit)) % 2;
 
-      buckets[hash].push(a[i]);
-    }
+      var target = bucketPtrs[hash];
+      if (i != target) {
+        swap(a, i, target);
 
-    // Assemble the full listing
-    var tempList = [];
-    for (var i = 0; i < buckets[0].length; i++) {
-      tempList.push(buckets[0][i]);
-    }
-    for (var i = 0; i < buckets[1].length; i++) {
-      tempList.push(buckets[1][i]);
-    }
-
-    // Swap around the main list to put it in order
-    for (var i = 0; i < n; i++) {
-      for (var j = i; j < n; j++) {
-        if (tempList[i] == a[j] && i != j) {
-          swap(a, i, j);
+        // Fix up todo list if we swapped an element
+        var fixed = false;
+        for (var j = t; j < todo.length; j++) {
+          if (todo[j] == target) {
+            todo[j] = i;
+            fixed = true;
+          }
+        }
+        if (!fixed) {
+          console.log("Error: Swapped with element already in sorted list");
+          return;
         }
       }
+
+      bucketPtrs[hash]++;
     }
   }
 }
