@@ -222,6 +222,66 @@ function radixLsdSort(a) {
   }
 }
 
+function radixMsdSort(a, ignoredType, left, right) {
+  var n = a.length;
+  if (typeof(left) === 'undefined') left = 0;
+  if (typeof(right) === 'undefined') right = n - 1;
+
+  if (left >= right) return;
+
+  // Pick a midpoint
+  var delta = right - left;
+  var bit = Math.floor(Math.log(delta) / Math.log(2));
+  var midpoint = left + Math.pow(2, bit);
+
+  // Move everything with the bit set up, clear down
+  // Keep a todo list so we don't get out of order by swapping
+  var todo = [];
+  for (var i = left; i <= right; i++) {
+    todo.push(i);
+  }
+
+  // Put each item into the respective bucket
+  var bucketPtrs = [left, midpoint];
+  for (var t = 0; t < todo.length; t++) {
+    var i = todo[t];
+    test(a, i, i); // Treat hash as test to be fair for speed comparison
+    var value = a[i] - 1;
+    var hash = 0;
+    if (value >= Math.pow(2, bit) + left) {
+      hash = 1;
+    } else {
+      hash = 0;
+    }
+
+    var target = bucketPtrs[hash];
+    if (i != target) {
+      swap(a, i, target);
+
+      // Fix up todo list if we swapped an element
+      var fixed = false;
+      for (var j = t; j < todo.length; j++) {
+        if (todo[j] == target) {
+          todo[j] = i;
+          fixed = true;
+        }
+      }
+      if (!fixed) {
+        console.log("Error: Swapped with element already in sorted list");
+        return;
+      }
+    }
+
+    bucketPtrs[hash]++;
+  }
+
+  // Recurse
+  if (bit > 0) {
+    radixMsdSort(a, ignoredType, left, midpoint-1);
+    radixMsdSort(a, ignoredType, midpoint, right);
+  }
+}
+
 function pivot(aa, type, left, right) {
   if (typeof(left) === 'undefined') left = 0;
   if (typeof(right) === 'undefined') right = aa.length() - 1;
